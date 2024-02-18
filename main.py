@@ -1,18 +1,10 @@
-import os
 import sys
-import time
-
-import cv2
-import dlib
-import numpy as np
 from utils.registration import RegisterWindow
 from utils.login import LoginWindow
-from Cryptodome.Cipher import AES
-from PySide6.QtCore import Qt, QThread, Signal, Slot
-from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
-from PySide6.QtWidgets import (QApplication, QLineEdit, QGroupBox, QGridLayout,
-                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
-                               QSizePolicy, QVBoxLayout, QWidget, QComboBox)
+from PySide6.QtCore import Slot
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QMainWindow, QPushButton,
+                               QSizePolicy, QVBoxLayout, QWidget)
 
 
 class MainWindow(QMainWindow):

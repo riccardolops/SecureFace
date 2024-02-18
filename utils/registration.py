@@ -4,7 +4,6 @@ import time
 import cv2
 import dlib
 import numpy as np
-import hashlib
 from Cryptodome.Protocol.KDF import PBKDF2
 from utils.utils import shape_to_np
 from Cryptodome.Cipher import AES

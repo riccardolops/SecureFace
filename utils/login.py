@@ -4,12 +4,11 @@ import time
 import cv2
 import dlib
 import numpy as np
-import hashlib
 from utils.utils import shape_to_np
 from Cryptodome.Cipher import AES
 from PySide6.QtCore import Qt, QThread, Signal, Slot
 from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
-from PySide6.QtWidgets import (QApplication, QLineEdit, QGroupBox, QGridLayout,
+from PySide6.QtWidgets import (QLineEdit, QGroupBox,
                                QHBoxLayout, QLabel, QMainWindow, QPushButton,
                                QSizePolicy, QVBoxLayout, QWidget, QComboBox)
 
