@@ -195,21 +195,16 @@ class RegisterWindow(QMainWindow):
         print("Starting...")
         self.button2.setEnabled(True)
         self.button1.setEnabled(False)
+        self.th.status = True
         self.th.start()
 
     @Slot()
     def newuser(self):
         print("Registering new user...")
-        self.button2.setEnabled(False)
-        self.button3.setEnabled(False)
-        self.th.cap.release()
-        cv2.destroyAllWindows()
-        self.status = False
+        self.kill_thread()
         self._password_window.embeddings = self.th.embeddings
-        self.th.terminate()
-        # Give time for the thread to finish
-        time.sleep(1)
         self._password_window.show()
+        self.button3.setEnabled(False)
 
     @Slot(QImage)
     def setImage(self, image):

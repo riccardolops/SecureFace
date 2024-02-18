@@ -42,6 +42,7 @@ class ThreadLogin(QThread):
 
             # Drawing green rectangle around the pattern
             recognised_face = False
+            norm = 0
             for (x, y, w, h) in detections:
                 pos_ori = (x, y)
                 pos_end = (x + w, y + h)
@@ -50,15 +51,16 @@ class ThreadLogin(QThread):
                 drect = dlib.rectangle(int(x),int(y),int(x+w),int(y+h))
                 landmarks = predictor(gray_frame, drect)
                 face_features_detected = np.array(face_recognition_model.compute_face_descriptor(frame, landmarks, 1)) # maps human faces into 128D vectors where pictures of the same person are mapped near to each other and pictures of different people are mapped far apart
-                if np.linalg.norm(self.face_features - face_features_detected) <= TOLERANCE:
+                norm = np.linalg.norm(self.face_features - face_features_detected)
+                if norm <= TOLERANCE:
                     recognised_face = True
                     break
             
             if recognised_face:
-                cv2.putText(frame, "Login effettuato con successo!", (10, 20),
+                cv2.putText(frame, "Login effettuato con successo! Distance norm: " + str(norm), (10, 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             else:
-                cv2.putText(frame, "Nessun volto riconosciuto.", (10, 20),
+                cv2.putText(frame, "Nessun volto riconosciuto. Distance norm: " + str(norm), (10, 20),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
             # Reading the image in RGB to display it
@@ -122,8 +124,11 @@ class LoginWindow(QMainWindow):
 
         # Buttons layout
         buttons_layout = QHBoxLayout()
-        self.button1 = QPushButton("Start")
+        self.button1 = QPushButton("Login")
+        self.button2 = QPushButton("Cancel")
         self.button1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.button2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        buttons_layout.addWidget(self.button2)
         buttons_layout.addWidget(self.button1)
 
         right_layout = QHBoxLayout()
@@ -142,6 +147,8 @@ class LoginWindow(QMainWindow):
 
         # Connections
         self.button1.clicked.connect(self.start)
+        self.button2.clicked.connect(self.kill_thread)
+        self.button2.setEnabled(False)
 
     def refresh_combobox(self):
         self.combobox.clear()
@@ -151,7 +158,8 @@ class LoginWindow(QMainWindow):
 
     @Slot()
     def kill_thread(self):
-        print("Finishing...")
+        print("Finishing login...")
+        self.button2.setEnabled(False)
         self.button1.setEnabled(True)
         self.th.cap.release()
         cv2.destroyAllWindows()
@@ -169,12 +177,14 @@ class LoginWindow(QMainWindow):
             ciphertext = f.read()
 
         key = self.user_pwd.text().encode()
+        self.user_pwd.clear()
         key = key.ljust(32, b'\0')[:32]
         cipher = AES.new(key, AES.MODE_OCB, nonce=nonce)
         try:
             array_bytes_decrypted = cipher.decrypt_and_verify(ciphertext, tag)
             array_back = np.frombuffer(array_bytes_decrypted, dtype=np.float64).reshape((128,))
             self.th.face_features = array_back
+            self.button2.setEnabled(True)
             self.button1.setEnabled(False)
             self.th.start()
         except ValueError:
