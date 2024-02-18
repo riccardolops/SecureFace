@@ -1,4 +1,4 @@
 dlib
 pycryptodomex
 pyside6
-cv2
+opencv-python
